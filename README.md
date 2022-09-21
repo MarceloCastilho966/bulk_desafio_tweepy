@@ -10,6 +10,7 @@ https://developer.twitter.com/en
 3. Agora criamos nossa conexão Stream utilizando Twitter API v2
 
 '''
+
 bearer_token = 'Seu Token aqui'
 
 
@@ -18,6 +19,7 @@ bearer_token = 'Seu Token aqui'
 4. Criamos o código para a execução da nossa Stream
 
 '''
+
 class MyStream(tweepy.StreamingClient):
     def on_connect(self): ## Chamado quando feita a conexão
         print("Conectado")  
@@ -39,6 +41,7 @@ class MyStream(tweepy.StreamingClient):
 5. Criação do Header do CSV
 
 '''
+
 with open('eleicoes2022.csv', 'w') as f:
     writer = csv.writer(f, delimiter='|')
     writer.writerow(['ID', 'Text', 'Data'])
@@ -48,6 +51,7 @@ with open('eleicoes2022.csv', 'w') as f:
 6. Conectando com Twitter
 
 '''
+
 stream = MyStream(bearer_token=bearer_token)
 
 '''
@@ -55,6 +59,7 @@ stream = MyStream(bearer_token=bearer_token)
 7. Criação da regra para filtrar tweets
 
 ''''
+
 rule = tweepy.StreamRule("""(#LulaNo1oturno OR #BolsonaroNoPrimeiroTurno22) 
 -has:links -is:retweet -\n""") ## Pegando ambas as hashtags, sem links e sem retweets
 
@@ -65,6 +70,7 @@ stream.add_rules(rule)
 8. Iniciando a Stream, pegando o ID, Texto e Data/Hora
 
 '''
+
 stream.filter(expansions=['referenced_tweets.id'], tweet_fields=['author_id', 'created_at'])
 
 '''
@@ -77,6 +83,7 @@ stream.filter(expansions=['referenced_tweets.id'], tweet_fields=['author_id', 'c
 1.  Leitura e limpeza dos dados recebidos
 
 '''
+
 df = spark.read.csv('/home/marcelo/eleicoes2022.csv',header=True, sep='|', multiLine=True, escape='"')
 df.show(5)
 
@@ -85,6 +92,7 @@ df.show(5)
 2. To Pandas
 
 '''
+
 pandasDF = df.toPandas()
 
 '''
@@ -92,6 +100,7 @@ pandasDF = df.toPandas()
 3. Criando DF das duas hashtags buscadas
 
 '''
+
 bolsonaro = pandasDF.query('Text.str.contains("#BolsonaroNoPrimeiroTurno22")', engine='python')
 
 lula = pandasDF.query('Text.str.contains("#LulaNo1oturno")', engine='python')
@@ -101,6 +110,7 @@ lula = pandasDF.query('Text.str.contains("#LulaNo1oturno")', engine='python')
 4. Contagem de Tweets:
 
 '''
+
 count_total = pandasDF['ID'].count()
 count_bolsonaro = bolsonaro['Text'].count()
 count_lula = lula['Text'].count()
@@ -126,6 +136,7 @@ LulaNo1oturno: 637
 5. Criando Gŕafico da contagem
 
 '''
+
 nomes = ['Total', 'Bolsonaro', 'Lula']
 valores = [count_total, count_bolsonaro, count_lula]
 
@@ -140,6 +151,7 @@ plt.bar(nomes, valores)
 1. Geral 
 
 '''
+
 top_N = 5
 a = pandasDF['Text'].str.cat(sep=' ')
 words = nltk.tokenize.word_tokenize(a)
@@ -152,6 +164,7 @@ display(rslt)
 '''
 
 '''
+
 df1 = sns.load_dataset('tips')
 plt.figure(figsize=(15, 5))
 sns.lineplot(data=rslt, x="Palavra", y="Frequencia")
@@ -162,6 +175,7 @@ plt.show()
 2. #BolsonaroNoPrimeiroTurno22
 
 '''
+
 top_N = 5
 a = bolsonaro['Text'].str.cat(sep=' ')
 words = nltk.tokenize.word_tokenize(a)
@@ -174,6 +188,7 @@ display(rslt1)
 '''
 
 '''
+
 df1 = sns.load_dataset('tips')
 plt.figure(figsize=(15, 5))
 sns.lineplot(data=rslt1, x="Palavra", y="Frequencia")
@@ -184,6 +199,7 @@ plt.show()
 3. #LulaNo1oturno
 
 '''
+
 top_N = 5
 a = lula['Text'].str.cat(sep=' ')
 words = nltk.tokenize.word_tokenize(a)
@@ -196,6 +212,7 @@ display(rslt2)
 '''
 
 '''
+
 df1 = sns.load_dataset('tips')
 plt.figure(figsize=(15, 5))
 sns.lineplot(data=rslt2, x="Palavra", y="Frequencia")
