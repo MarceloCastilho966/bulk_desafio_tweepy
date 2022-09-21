@@ -12,6 +12,7 @@ https://developer.twitter.com/en
 '''
 bearer_token = 'Seu Token aqui'
 
+
 '''
 
 4. Criamos o código para a execução da nossa Stream
@@ -41,12 +42,14 @@ class MyStream(tweepy.StreamingClient):
 with open('eleicoes2022.csv', 'w') as f:
     writer = csv.writer(f, delimiter='|')
     writer.writerow(['ID', 'Text', 'Data'])
+    
 '''
 
 6. Conectando com Twitter
 
 '''
 stream = MyStream(bearer_token=bearer_token)
+
 '''
 
 7. Criação da regra para filtrar tweets
@@ -56,12 +59,14 @@ rule = tweepy.StreamRule("""(#LulaNo1oturno OR #BolsonaroNoPrimeiroTurno22)
 -has:links -is:retweet -\n""") ## Pegando ambas as hashtags, sem links e sem retweets
 
 stream.add_rules(rule)
+
 '''
 
 8. Iniciando a Stream, pegando o ID, Texto e Data/Hora
 
 '''
 stream.filter(expansions=['referenced_tweets.id'], tweet_fields=['author_id', 'created_at'])
+
 '''
 
 ## Nossa Stream está pronta, funcionando, pegando os tweets e jogando para o CSV "eleições2022.csv"
@@ -74,12 +79,14 @@ stream.filter(expansions=['referenced_tweets.id'], tweet_fields=['author_id', 'c
 '''
 df = spark.read.csv('/home/marcelo/eleicoes2022.csv',header=True, sep='|', multiLine=True, escape='"')
 df.show(5)
+
 '''
 
 2. To Pandas
 
 '''
 pandasDF = df.toPandas()
+
 '''
 
 3. Criando DF das duas hashtags buscadas
@@ -88,6 +95,7 @@ pandasDF = df.toPandas()
 bolsonaro = pandasDF.query('Text.str.contains("#BolsonaroNoPrimeiroTurno22")', engine='python')
 
 lula = pandasDF.query('Text.str.contains("#LulaNo1oturno")', engine='python')
+
 '''
 
 4. Contagem de Tweets:
@@ -102,6 +110,7 @@ print(f'Total: {count_total} \n')
 print(f'BolsonaroNoPrimeiroTurno22: {count_bolsonaro} \n')
 print(f'LulaNo1oturno: {count_lula}')
 print('-'*40)
+
 '''
 Contagem de Tweets: 
 
@@ -123,6 +132,7 @@ valores = [count_total, count_bolsonaro, count_lula]
 plt.figure(figsize=(15, 5))
 plt.subplot(131)
 plt.bar(nomes, valores)
+
 '''
 
 ### Contador das palavras mais utilizadas nos tweets e seu respectivo gráfico
@@ -138,6 +148,7 @@ word_dist = nltk.FreqDist(words)
 rslt = pd.DataFrame(word_dist.most_common(top_N),
                     columns=['Palavra', 'Frequencia'])
 display(rslt)
+
 '''
 
 '''
@@ -145,6 +156,7 @@ df1 = sns.load_dataset('tips')
 plt.figure(figsize=(15, 5))
 sns.lineplot(data=rslt, x="Palavra", y="Frequencia")
 plt.show()
+
 '''
 
 2. #BolsonaroNoPrimeiroTurno22
@@ -158,6 +170,7 @@ word_dist = nltk.FreqDist(words)
 rslt1 = pd.DataFrame(word_dist.most_common(top_N),
                     columns=['Palavra', 'Frequencia'])
 display(rslt1)
+
 '''
 
 '''
@@ -165,6 +178,7 @@ df1 = sns.load_dataset('tips')
 plt.figure(figsize=(15, 5))
 sns.lineplot(data=rslt1, x="Palavra", y="Frequencia")
 plt.show()
+
 '''
 
 3. #LulaNo1oturno
@@ -178,6 +192,7 @@ word_dist = nltk.FreqDist(words)
 rslt2 = pd.DataFrame(word_dist.most_common(top_N),
                     columns=['Palavra', 'Frequencia'])
 display(rslt2)
+
 '''
 
 '''
@@ -185,6 +200,7 @@ df1 = sns.load_dataset('tips')
 plt.figure(figsize=(15, 5))
 sns.lineplot(data=rslt2, x="Palavra", y="Frequencia")
 plt.show()
+
 '''
 
 
