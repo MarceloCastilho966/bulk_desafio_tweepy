@@ -115,11 +115,13 @@ print('-'*40)
 Contagem de Tweets: 
 
 ----------------------------------------
+
 Total: 3229 
 
 BolsonaroNoPrimeiroTurno22: 1631 
 
 LulaNo1oturno: 637
+
 ----------------------------------------
 
 
