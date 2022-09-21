@@ -2,18 +2,18 @@
 
 ## Criação de uma Stream com Tweeter utilizando a API Tweepy, com uma breve analise dos dados coletados.
 
-1. Primeiro é necessário a criação de um perfil de desenvolvedor no Twitter no link:
+1. #### Primeiro é necessário a criação de um perfil de desenvolvedor no Twitter no link:
 https://developer.twitter.com/en
 
-2. Após a criação do seu perfil, será informado seu Bearer Token, que utilizaremos para criar a conexão
+2. #### Após a criação do seu perfil, será informado seu Bearer Token, que utilizaremos para criar a conexão
 
-3. Agora criamos nossa conexão Stream utilizando Twitter API v2
+3. #### Agora criamos nossa conexão Stream utilizando Twitter API v2
 
 ```
 bearer_token = 'Seu Token aqui'
 ```
 
-4. Criamos o código para a execução da nossa Stream
+4. #### Criamos o código para a execução da nossa Stream
 
 ```
 
@@ -34,7 +34,7 @@ class MyStream(tweepy.StreamingClient):
         print("Desconectado")
 ```
 
-5. Criação do Header do CSV
+5. #### Criação do Header do CSV
 
 ```
 
@@ -44,7 +44,7 @@ with open('eleicoes2022.csv', 'w') as f:
     
 ```
 
-6. Conectando com Twitter
+6. #### Conectando com Twitter
 
 ```
 
@@ -52,7 +52,7 @@ stream = MyStream(bearer_token=bearer_token)
 
 ```
 
-7. Criação da regra para filtrar tweets
+7. #### Criação da regra para filtrar tweets
 
 ```
 rule = tweepy.StreamRule("""(#LulaNo1oturno OR #BolsonaroNoPrimeiroTurno22) 
@@ -61,7 +61,7 @@ rule = tweepy.StreamRule("""(#LulaNo1oturno OR #BolsonaroNoPrimeiroTurno22)
 stream.add_rules(rule)
 ```
 
-8. Iniciando a Stream, pegando o ID, Texto e Data/Hora
+8. #### Iniciando a Stream, pegando o ID, Texto e Data/Hora
 
 
 ```
@@ -74,7 +74,7 @@ stream.filter(expansions=['referenced_tweets.id'], tweet_fields=['author_id', 'c
 #### Agora é hora de fazermos uma breve analise desses dados:
 
 
-1.  Leitura e limpeza dos dados recebidos
+1.  #### Leitura e limpeza dos dados recebidos
 
 ```
 df = spark.read.csv('/home/marcelo/eleicoes2022.csv',header=True, sep='|', multiLine=True, escape='"')
@@ -88,7 +88,7 @@ df.show(5)
 pandasDF = df.toPandas()
 ```
 
-3. Criando DF das duas hashtags buscadas
+3. #### Criando DF das duas hashtags buscadas
 
 
 ```
@@ -98,7 +98,7 @@ lula = pandasDF.query('Text.str.contains("#LulaNo1oturno")', engine='python')
 ```
 
 
-4. Contagem de Tweets:
+4. #### Contagem de Tweets:
 
 ```
 count_total = pandasDF['ID'].count()
@@ -123,7 +123,7 @@ LulaNo1oturno: 637
 ----------------------------------------
 
 
-5. Criando Gŕafico da contagem
+5. #### Criando Gŕafico da contagem
 
 ```
 nomes = ['Total', 'Bolsonaro', 'Lula']
@@ -137,7 +137,7 @@ plt.bar(nomes, valores)
 
 ### Contador das palavras mais utilizadas nos tweets e seu respectivo gráfico
 
-1. Geral 
+1. #### Geral 
 
 
 ```
@@ -159,7 +159,7 @@ sns.lineplot(data=rslt, x="Palavra", y="Frequencia")
 plt.show()
 ```
 
-2. #BolsonaroNoPrimeiroTurno22
+2. #### BolsonaroNoPrimeiroTurno22
 
 ```
 top_N = 5
@@ -182,7 +182,7 @@ plt.show()
 ```
 
 
-3. #LulaNo1oturno
+3. #### LulaNo1oturno
 
 ```
 top_N = 5
